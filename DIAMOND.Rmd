@@ -1,0 +1,1059 @@
+---
+title: "Untitled"
+author: "shriyutha"
+date: "10/26/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+```{r}
+
+# lets begin......
+
+# A Diamond is a precious stone formed from an colorless crystalline form of pure carbon. As we all know, a diamond has been an all time preference in the section of ornaments. So diamonds are widely used in making different kinds of jewelries and decorative items.
+
+# when compare to other ornaments, the price of the diamond is bit high. So it is very important to have knowledge about diamond features and price distributions, and mainly understanding diamonds are very important, because each diamond is unique in its way.
+
+# That is the main reason I have chosen this data set.
+
+# Here in this data set, I am predicting the price of the diamonds with all remaining variables are given.
+
+```
+
+```{r}
+# DIAMOND ANALYSIS AND DIAMOND PRICE PREDICTION USING LINEAR REGRESSION MODEL, RANDOM FOREST MODEL, DECISION TREE MODEL.
+
+# I have downloaded this data set from kaggel.
+
+# This is the link of it. https://www.kaggle.com/shivam2503/diamonds/download
+
+# Loading Data set (it is in excel format).
+
+# Let's import the data.
+
+library(readxl)
+
+mydiamond_xlsx <- read_excel("E:/UCSC_Assignments/mydiamond.xlsx.xls")
+
+View(mydiamond_xlsx)
+```
+
+```{r}
+# installing  packages and calling library function.
+
+# Some of the libraries to run the program. 
+
+library(tidyverse)
+library(dplyr) # for select function
+library(caTools) # data splitting
+library(gridExtra) # plot
+library(data.table) # to check table data
+library(ggplot2) # plot
+library(rpart) # rpart model
+library(MASS)
+library(car)
+library(DataExplorer) # for plot
+library(class)
+library(gmodels)
+library(corrplot) # for correlation
+library(plyr)
+library(pastecs)
+library(plotrix) # for plot
+library(psych)
+library(caret) # for prediction
+library(readr) # Random forest model
+library(party) # rpart model
+library(randomForest) # Random forest model
+```
+
+```{r}
+# Changing the variable name of the Data set. 
+
+diamond <- mydiamond_xlsx
+diamond
+
+view(diamond)
+
+# There are 11 variables provided in the data set
+
+# Count : (16383) overall counts.
+# Carat : (0.2 – 3.0) - weight
+# Cut : (worst)Fair, Good, Very Good, Premium, (best)Ideal - quality of the diamond cut
+# Color : D, E, F, G, (best)H, I ,(worst)J 
+# Clarity : (worst)IF, VVS1, VVS2, (best)VS1, VS2, SI1, SI2, I1- how clear the diamonds are?
+# Depth :  total depth = z / (z * 100) - total height of the diamond.
+# Table : table = y / (x * 100) - total width of the diamond.
+# Price : (326 – 6541) US Dollars
+# X : length in mm (0 – 9.23) - top length of the diamond.
+# Y : width in mm (0 – 9.1) - top width of the diamond.
+# Z : depth in mm (0 – 5.77) - top depth of the diamond.
+```
+
+```{r}
+
+# Structure of the data set.
+
+# Data set contains rows = 16383 and cols = 11.
+
+# Structure function describes the given object with further attributes sets.
+str(diamond) 
+
+# nrow and rownames function describes the number of rows in the row and rows names of the data set.
+nrow(diamond)
+rownames(diamond)
+
+# ncol and colnames function describes the number of rows in the column and columns names of the data set.
+ncol(diamond)
+colnames(diamond)
+
+# the column name of the data set.
+names(diamond)
+
+# head function displays only top few data set.
+head(diamond)
+
+#tail function displays only bottom few data set.
+tail(diamond)
+
+# dim function display dimension of the data set.
+dim(diamond)
+
+# glimpse function displays overall variables values.
+glimpse(diamond)
+```
+
+```{r}
+# Summary of the diamond data set.
+
+# Summary  describes the overall summary statistics on the column of the data frame.
+
+summary(diamond)
+```
+
+```{r}
+# Checking whether the Data set is data frame or not.
+
+dataframe <- is.data.frame(diamond)
+dataframe
+```
+
+```{r}
+# Coping the Data set to other variable.
+
+input <- copy(diamond)
+input
+```
+
+```{r}
+# Checking max and min vales for the variables in the data set.
+
+# We can get these values from summary of the data.
+
+max(diamond$price)
+min(diamond$price)
+
+max(diamond$carat)
+min(diamond$carat)
+
+max(diamond$table)
+min(diamond$table)
+
+max(diamond$depth)
+min(diamond$depth)
+
+max(diamond$x)
+min(diamond$x)
+
+max(diamond$y)
+min(diamond$y)
+
+max(diamond$z)
+min(diamond$z)
+```
+
+```{r}
+# Displaying number of NA's in each column.
+
+colSums(is.na(diamond))
+
+# There is no missing values in this data set, it is clean.
+```
+
+```{r}
+#  Plotting Missing Values in the Data set.
+
+plot_missing(diamond)
+```
+
+```{r}
+# Plotting histogram chart for the data set.
+
+# Histogram is used to plot continuous variables, and it breaks the data in bins, and shows the frequency distribution of these bins.
+
+hist(diamond$carat,xlab = "diamond$carat", ylab = "price",col = "yellow",border = "red")
+hist(diamond$depth,xlab = "diamond$depth", ylab = "price",col = "blue",border = "red")
+hist(diamond$table,xlab = "diamond$table", ylab = "price",col = "yellow",border = "red")
+hist(diamond$price,xlab = "diamond$price", ylab = "price",col = "blue",border = "red")
+hist(diamond$x,xlab = "diamond$x", ylab = "price",col = "yellow",border = "red")
+hist(diamond$y,xlab = "diamond$y", ylab = "price",col = "blue",border = "red")
+hist(diamond$z,xlab = "diamond$z", ylab = "price",col = "yellow",border = "red")
+```
+
+```{r}
+# Descriptive statistics.
+
+# stat.desc function provide total number of na values, null values, min, max, mean, sd, coef values.
+
+stat.desc(diamond)
+```
+
+```{r}
+# Plotting density chart for the data set.
+
+# Density graph is used to display the distribution of  numeric variables.  also displays the bandwidth of the values.
+
+j <- density(diamond$carat) # returns the density data
+plot(j, main="Density of carat")
+polygon(j, col="red")
+
+k <- density(diamond$depth) # returns the density data
+plot(k, main="Density of depth")
+polygon(k, col="purple")
+
+l <- density(diamond$table) # returns the density data
+plot(l, main="Density of table")
+polygon(l, col="red")
+
+m <- density(diamond$price) # returns the density data
+plot(m, main="Density of price")
+polygon(m, col="purple")
+
+n <- density(diamond$x) # returns the density data
+plot(n, main="Density of length in mm (x)")
+polygon(n, col="red")
+
+o <- density(diamond$y) # returns the density data
+plot(o, main="Density of width in mm (y)")
+polygon(o, col="purple")
+
+p <- density(diamond$z) # returns the density data
+plot(p, main="Density of depth in mm (z)")
+polygon(p, col="red")
+```
+
+```{r}
+# Box-plot chart for data set.
+
+# Box-plot graph is used to display the combination of continuous variable and also categorical variables. 
+
+box_plot <- grid.arrange(ggplot(diamond, aes(carat, price))+geom_boxplot(),
+             ggplot(diamond, aes(cut, price))+geom_boxplot(),
+             ggplot(diamond, aes(color, price))+geom_boxplot(),
+             ggplot(diamond, aes(clarity, price))+geom_boxplot(),
+             ggplot(diamond, aes(table, price))+geom_boxplot(),
+             ggplot(diamond, aes(depth, price))+geom_boxplot(),
+             ggplot(diamond, aes(x, price))+geom_boxplot(),
+             ggplot(diamond, aes(y, price))+geom_boxplot(),
+             ggplot(diamond, aes(z, price))+geom_boxplot(),
+             ggplot(diamond, aes(price, price))+geom_boxplot())
+box_plot
+```
+
+```{r}
+# pie chart for diamond cut.
+
+# Pie-chart is used to display the values in the form of slice of the circle in different colors.
+
+mytable <- table(diamond$cut)
+mytable
+
+# 3D Pie Chart.
+
+piepercent<- round(100*mytable/sum(mytable), 1)
+
+pie3D(mytable, labels = piepercent, explode = 0.1, main = "diamond cut pie chart",col = rainbow(length(mytable)))
+legend("topright", c('Fair', 'Good', 'Ideal', 'Premium','Very Good' ), cex = 0.7,
+   fill = rainbow(length(mytable)))
+
+# Ideal is best and Fair is worst quality of cut in diamond.
+# Number of customers purchased ideal cut diamond.
+```
+
+```{r}
+# pie chart for diamond color.
+
+# Pie-chart is used to display the values in the form of slice of the circle in different colors.
+
+mytable <- table(diamond$color)
+mytable
+
+# 3d Pie Chart
+
+piepercent<- round(100*mytable/sum(mytable), 1)
+
+pie3D(mytable, labels = piepercent, explode = 0.1, main = "diamond color pie chart",col = rainbow(length(mytable)))
+legend("topright", c('D', 'E', 'F', 'G', 'H', 'I', 'J'), cex = 0.6,
+   fill = rainbow(length(mytable)))
+
+# H is best and J is worst quality of color in diamond.
+
+# Number of customers purchased H color diamond.
+```
+
+```{r}
+# pie chart for diamond clarity.
+
+# Pie-chart is used to display the values in the form of slice of the circle in different colors.
+
+mytable <- table(diamond$clarity)
+mytable
+
+# 3d Pie Chart
+
+piepercent<- round(100*mytable/sum(mytable), 1)
+
+pie3D(mytable, labels = piepercent, explode = 0.1, main = "diamond clarity pie chart",col = rainbow(length(mytable)))
+legend("topright", c('I1','IF','SI1', 'SI2', 'VS1', 'VS2', 'VVSI', 'VVS2'), cex = 0.5,
+   fill = rainbow(length(mytable)))
+
+# VS1 and VS2 are best and I1 is worst quality of clarity in diamond.
+
+# Number of customers purchased SI1 clarity diamond.
+
+# From this pie chart, I can say that if you go for higher quality of diamond - number of customs are more. Its because of the quality of the diamond.
+```
+
+```{r}
+# Pairing with scatterplot.
+
+xx <- pairs(~price+carat+depth+table, data = diamond, main = "Scatterplot Matrix")
+xx
+
+# Looks like all are  not correlated.
+```
+
+```{r}
+# Pairing with scatterplot.
+
+xx <- pairs(~price+z+y+x, data = diamond, main = "Scatterplot Matrix")
+xx
+
+# Looks like all are correlated.
+```
+
+```{r}
+# Finding mean, median and sd for the diamond price.
+
+mydiamond <- diamond$price
+mydiamond
+
+sum <- summarise(diamond, mean = mean(mydiamond, na.rm = TRUE), sd = sd(mydiamond), median = median(mydiamond))
+sum
+```
+
+```{r}
+# To check the unique values.
+
+rapply(diamond,function(x)length(unique(x)))
+```
+
+```{r}
+# Histogram plot for price distribution.
+
+histo <-ggplot(data = diamond) + geom_histogram(binwidth = 300,aes(x = price)) + labs(title = "diamond price distributions") + xlab("price") + ylab("frequency") +  theme_minimal()  
+plot(histo)
+
+a <- ggplot(data = diamond) + geom_histogram(binwidth=60, aes(x=price)) + labs(title = "diamond price") + xlab('price') + ylab("frequency") + theme_minimal() + xlim(0,1000)
+plot(a)
+
+b <- ggplot(data = diamond) + geom_histogram(binwidth=400, aes(x=price)) + labs(title = "diamond price") + xlab('price') + ylab("frequency") + theme_minimal() + xlim(2500,6500)
+plot(b)
+
+# As you can see here, very less portion in 0 - 500 $ and again continuing from 2500 - 7000 $.
+
+# This is because the quality of the diamonds. If you go for higher quality of the diamonds, the price is also more here.
+```
+
+```{r}
+# Bar graph 
+
+# Bar graph of cut v/s price wrt cut.
+
+# the price of ideal cut diamond is more and for fair the price is very low.
+
+cut <-ggplot(data = diamond) + geom_bar(aes(x = cut, fill = cut)) + labs(title = "diamond cut distributions v/s price") + xlab("cut") + ylab("price") + theme(legend.position = "right")
+cut
+
+
+# Bar graph of clarity v/s price wrt clarity.
+
+# the price of SI1 and SI2 clarity diamond is more and for IF and I1 the price is very low.
+
+clarity <-ggplot(data = diamond) + geom_bar(aes(x = clarity, fill = clarity)) + labs(title = "diamond clarity distributions v/s price") + xlab("clarity") + ylab("price") + theme(legend.position = "right")
+clarity
+
+
+# Bar graph of color v/s price wrt color.
+
+# the price of H, G color diamond is more and for J the price is very low.
+
+color <-ggplot(data = diamond) + geom_bar(aes(x = color, fill = color)) + labs(title = "diamond clarity distributions v/s price") + xlab("color") + ylab("price") + theme(legend.position = "right")
+color
+
+# From this bar graph, I can say if you go for higher quality of diamonds, the price is also increases.
+
+# SO cut and clarity variables are the responsible variables for the variation in the price.
+
+# Color of the diamond is not much important with respect to price.
+```
+
+```{r}
+# Bar graph 
+
+# Bar graph of clarity v/s count wrt cut.
+
+# THe count is more for SI1 and SI2.
+clarity.cut <-ggplot(data = diamond) + geom_bar(aes(x = clarity, fill = cut)) + labs(title = "diamond clarity distributions") + xlab("clarity") + ylab("count") + theme(legend.position = "right")
+clarity.cut
+
+
+# Bar graph of clarity v/s count wrt color.
+
+# THe count is more for H and G.
+clarity.color <-ggplot(data = diamond) + geom_bar(aes(x = clarity, fill = color)) + labs(title = "diamond cut distributions ") + xlab("clarity") + ylab("count") + theme(legend.position = "right")
+clarity.color
+
+
+# Bar graph of cut v/s count wrt color.
+
+# THe count is more for Ideal and Premium.
+cut.color <-ggplot(data = diamond) + geom_bar(aes(x = cut, fill = color)) + labs(title = "diamond cut distributions ") + xlab("cut") + ylab("count") + theme(legend.position = "right")
+cut.color
+
+
+# Bar graph of cut v/s count wrt clarity.
+
+# THe count is more for H and G.
+cut.clarity <-ggplot(data = diamond) + geom_bar(aes(x = cut, fill = clarity)) + labs(title = "diamond cut distributions ") + xlab("cut") + ylab("count") + theme(legend.position = "right")
+cut.clarity
+```
+
+```{r}
+
+# Scatter-plot graph  x, y, z, table, depth v/s price.
+
+ggplot(data=diamond, aes(x=y, y=price)) + geom_point() + ggtitle("Diamond price by y values") + xlab("y Size") + ylab("price")
+
+ggplot(data=diamond, aes(x=z, y=price)) + geom_point() + ggtitle("Diamond price by z values") + xlab("z Size") + ylab("price")
+
+ggplot(data=diamond, aes(x=table, y=price)) + geom_point() + ggtitle("Diamond price by table vales") + xlab("table Size") + ylab("price")
+
+ggplot(data=diamond, aes(x=depth, y=price)) + geom_point() + ggtitle("Diamond price by depth values") + xlab("depth Size") + ylab("price")
+
+ggplot(data=diamond, aes(x=x, y=price)) + geom_point() + ggtitle("Diamond price by x values") + xlab("x Size") + ylab("price")
+
+# From the box-plot graph for x, y, z, table and depth variables wrt price, it looks like if you select larger size (length, width, height) of the diamond, the price is also increases.
+```
+
+```{r}
+# Box-Plot.
+
+#Box-plot for x v/s price wrt clarity.
+x.clarity <- ggplot(diamond,aes(x=x,y=price, color = clarity))+
+  geom_boxplot(alpha=0.7)+xlab("x - length") +
+  ylab("price")+labs(title = " length v/s price with clarity")+
+  guides(fill = guide_legend())
+plot(x.clarity)
+
+
+#Box-plot for y v/s price wrt clarity.
+y.clarity <- ggplot(diamond,aes(x=y,y=price, color = clarity))+
+  geom_boxplot(alpha=0.7)+xlab("y - width") +
+  ylab("price")+labs(title = " width v/s price with clarity")+
+  guides(fill = guide_legend())
+plot(y.clarity)
+
+
+#Box-plot for z v/s price wrt clarity.
+z.clarity <- ggplot(diamond,aes(x=z,y=price, color = clarity))+
+  geom_boxplot(alpha=0.7)+xlab("z - depth") +
+  ylab("price")+labs(title = " depth v/s price with clarity")+
+  guides(fill = guide_legend())
+plot(z.clarity)
+
+
+#Box-plot for depth v/s price wrt clarity.
+depth.clarity <- ggplot(diamond,aes(x=depth,y=price, color = clarity))+
+  geom_boxplot(alpha=0.7)+xlab("depth") +
+  ylab("price")+labs(title = " total depth v/s price with clarity")+
+  guides(fill = guide_legend())
+plot(depth.clarity)
+
+
+#Box-plot for table v/s price wrt clarity.
+table.clarity <- ggplot(diamond,aes(x=table,y=price, color = clarity))+
+  geom_boxplot(alpha=0.7)+xlab("table") +
+  ylab("price")+labs(title = " table v/s price with clarity")+
+  guides(fill = guide_legend())
+plot(table.clarity)
+
+# From the box-plot graph for x, y, z, table and depth variables wrt price, it looks like if you select larger size (length, width, height) of the diamond, the price is also increases. But when it comes to VVS1 and VVS2 the higher the size, but the price is low compare to others... but the clarity is not so clear.
+
+# The clarity of VS1 and VS2 are not best compare SI1 and SI2 but the price is more compare to this. 
+
+# So i can say that the variables x, y, z are highly correlated to price.
+```
+
+```{r}
+# scatter-plot.
+
+# Scatter-plot carat v/s price.
+ggplot(data = diamond) + geom_point(mapping = aes(x = carat, y = price))+ labs(title =  " diamond price by carat")
+
+
+# Scatter-plot carat v/s price wrt clarity.
+ggplot(data = diamond) + geom_point(mapping = aes(x = carat, y = price, color = clarity))+ labs(title = "carat v/s price with clarity")
+
+
+# Scatter-plot carat v/s price wrt cut.
+ggplot(data = diamond) + geom_point(mapping = aes(x = carat, y = price, color = cut))+ labs(title = "carat v/s  price with cut")
+
+
+# Scatter-plot carat v/s price wrt color.
+ggplot(data = diamond) + geom_point(mapping = aes(x = carat, y = price, color = color))+ labs(title = "carat v/s price with color")
+
+# If you select very small size diamond (carat), the price is also less. If you select bigger size, the price more.
+
+# Here the count is very less between <0.5 so the price is very less (< 500$). As you increase the weight f the diamond, the price also increases.
+
+# So i can say the carat and price are highly correlated to each other.
+
+# Again SI1 and SI2 are best in clarity, ideal and premium are best in cut, G and H are best in color in carat v/s price.
+```
+
+```{r}
+# Box-Plot
+
+# box-plot chart for color v/s price wrt cut.
+f <- ggplot(diamond,aes(x=color,y=price))+
+  geom_boxplot(fill="blue")+
+  xlab("color")+
+  ylab("price")+
+  facet_grid(~cut)
+  plot(f)
+  
+  
+# box-plot chart for clarity v/s price wrt cut.
+f <- ggplot(diamond,aes(x=clarity,y=price))+
+  geom_boxplot(fill="blue")+
+  xlab("clarity")+
+  ylab("price")+
+  facet_grid(~cut)
+  plot(f)
+  
+
+# box-plot chart for color v/s carat wrt cut.
+f <- ggplot(diamond,aes(x=color,y=carat))+
+  geom_boxplot(fill="blue")+
+  xlab("color")+
+  ylab("carat")+
+  facet_grid(~cut)
+  plot(f)
+  
+
+# box-plot chart for clarity v/s carat wrt cut.
+f <- ggplot(diamond,aes(x=clarity,y=carat))+
+  geom_boxplot(fill="blue")+
+  xlab("clarity")+
+  ylab("carat")+
+  facet_grid(~cut)
+  plot(f)
+  
+# SO cut and clarity variables are the responsible variables for the variation in the price.
+
+# Color of the diamond is not much important with respect to price.
+```
+
+```{r}
+#Displaying correlation matrix.
+
+# Correlation matrix will you the relation between the variables in the data sets.
+
+cor.relation <- diamond[6:11]
+
+Correlation <- cor(cor.relation)
+
+#Plotting Heat Map for correlation matrix
+corrplot(Correlation, method = "number")
+corrplot(Correlation, type = "lower")
+
+# carat, x, y, z and price are highly positively correlated to each other.
+
+```
+
+```{r}
+# Correlation details x,y,z v/s price.
+
+cor.test(diamond$price,diamond$x)
+cor.test(diamond$price,diamond$y)
+cor.test(diamond$price,diamond$z)
+cor.test(diamond$price,diamond$carat)
+
+# This is the detailed summary of the correlation between the x, y, z, carat v/s price here.
+```
+
+```{r}
+# Data splitting.
+
+# Here i am dividing my data into two portions. One portion is used to develop the predictive model and other is used for evaluation of the model's performance.
+
+# data is splitting into trainingset data (80%) and testingset data (20%).
+
+split <- sample.split(diamond$price, SplitRatio = 0.8)
+
+trainingSet <- subset(diamond, split == TRUE)
+testingSet <- subset(diamond, split == FALSE)
+
+nrow(trainingSet) 
+nrow(testingSet)
+
+nrow(diamond)
+```
+
+```{r}
+# Structure of trainingSet data.
+
+str(trainingSet)
+```
+
+```{r}
+# Structure of testingSet data.
+
+str(testingSet)
+```
+
+```{r}
+# View function for training, testing and normal diamond data set. 
+
+view(trainingSet)
+view(testingSet)
+
+view(diamond)
+```
+
+```{r}
+# LINEAR REGRESSION MODEL.
+
+# Regression is used to establish a relationship between 2 variables. 1 is response variable and other is predictive variable. In linear model, the relationship is generated by an equation y = a + bx. Here y is response variable and x is predicted variable, a and b are coefficients.
+
+# HERE I AM PREDICTING THE PRICE OF THE DIAMOND, GIVEN REMAINING ALL VARIABLES IN THE DATA SET.
+
+# Creating a MULTIPLE LINEAR REGRESSION model for training (80%) data to train the model.
+
+model <- lm(price~.,data = trainingSet)
+
+# Summary of the created model.
+summary(model)
+
+print(model)
+
+# coefficient values of the variables.
+coef(model)
+
+attributes(model)
+
+# As you can see here, the p values is less than <0.05 so the model works good for my diamond data set.
+
+# And R-squared vales is more range from 0 - 1. Higher the values, models works better.
+```
+
+```{r}
+# graph of the  multiple linear regression model.
+
+plot(model)
+```
+
+```{r}
+# confint function.
+
+confint(model)
+
+```
+
+```{r}
+#Lets make Predictions on Testing Set for multiple linear regression model.
+
+predictTest = predict(model, testingSet)
+predictTest
+```
+
+```{r}
+# Plot for multiple linear regression model.
+
+# the price and carat plot.
+
+ggplot() + geom_line(aes(x = testingSet$carat,  
+                          y = testingSet$price), colour = 'red') +
+  geom_point(aes(x = testingSet$carat, 
+                y = predict(model, testingSet)), colour = 'blue') +
+  
+  ggtitle('Carat vs Price (Testing set)') +
+  xlab('carat') +  ylab('price') +
+  scale_color_manual(labels = c( "Predicted", "Real"), values = c("red", "blue")) 
+
+# As you can see here, the predicted price and the original price are almost same here. Red line is original price and blue dots are the predicted price of the diamond with respect to carat.
+```
+
+```{r}
+# correlation for testing data in multiple linear regression.
+
+percentage <- cor(predictTest, testingSet$price) 
+percentage
+```
+
+```{r}
+# to calculate accuracy using mse, mae, rmse, r2 function in linear model.
+
+b <- testingSet$price
+a <- predictTest
+
+acc <- b - a
+
+mse = mean((acc)^2)
+mse 
+
+mae = mean(abs(acc))
+mae
+
+R2 = 1-(sum((acc)^2)/sum((a-mean(a))^2))
+R2
+
+rmse = sqrt(mean(acc^2))
+
+table(rmse, R2, mse, mae)
+
+print(paste("Root Mean Square Error:", rmse))
+print(paste("R-Squared:", R2))
+print(paste("Mean Squared Error:", mse))
+print(paste("Mean Absolate Error", mae))
+
+# RMSE AND R SQUARED VALUE IS LESS COMPARE TO RANDOM FOREST MODEL.
+```
+
+```{r}
+# Predicting diamond price using multiple linear regression model.
+
+avg <- subset(diamond, cut == "Premium" & color == "I" & clarity == "SI1" & carat == 1.27 & x == 6.94 & y == 6.99 & z == 4.24)
+avg
+
+properties6 <- data.frame(...1 = 13656,
+                carat = 1.27,
+                cut = "Premium",
+                color = "I",
+                clarity = "SI1",
+                depth = 60.9,
+                table = 59.0,
+                x=6.94,
+                y=6.99,
+                z=4.24)
+
+ result <- predict(model, properties6)
+ result
+ 
+ # 13656, 1.27, Premium, I, SI1, 60.9, 59.0, 6.94, 6.99, 4.24 and the ORIGINAL PRICE IS 5588. 
+ 
+ # THE PREDICTED PRICE IS 5803 $
+```
+
+```{r}
+# RANDOM FOREST MODEL.
+
+# In Random forest model approach, a large number of decision tree are created. Every observation is fed into every decision tree. The most common outcome for each observation is used as the final output. A new observation is fed into all trees and taking a majority vote for each classification model.
+
+# HERE I AM PREDICTING THE PRICE OF THE DIAMOND, GIVEN REMAINING ALL VARIABLES IN THE DATA SET.
+
+# Creating a RAMDOM FOREST MODEL for training (80%) data to train the model.
+
+output <- randomForest(price ~., data = trainingSet, mtry = 4, ntree = 100)
+print(output)
+
+attributes(output)
+
+plot(output)
+
+summary(output)
+
+predictvalue <- predict(output, testingSet)
+predictvalue
+
+plot(predictvalue)
+
+# print(importance(output)) 
+
+varImpPlot(output, pch = 15, col = "red", cex = 1)
+
+# As you can see here, 100 decision trees are created. And the estimated error is very less. And the accuracy is more.
+```
+
+```{r}
+# correlation of the random model.
+
+percentage <- cor(predictvalue, testingSet$price) 
+percentage
+```
+
+```{r}
+# result plot of random forest model.
+
+ggplot() + geom_line(aes(x = testingSet$carat,  
+                          y = testingSet$price), colour = 'red') +
+  geom_point(aes(x = testingSet$carat, 
+                y = predictvalue), colour = 'blue') +
+  
+  ggtitle('Carat vs Price (Testing set)') +
+  xlab('carat') +
+  ylab('price')
+
+# As you can see here, the predicted price and the original price are almost same here. Red line is original price and blue dots are the predicted price of the diamond with respect to carat. compare to multiple linear regression model, random forest model works better here ...
+```
+
+```{r}
+# # to calculate accuracy using mse, mae, rmse, r2 function in random forest.
+
+b <- testingSet$price
+a <- predictvalue
+
+acc <- b - a
+
+
+mse = mean((acc)^2)
+mse 
+
+mae = mean(abs(acc))
+mae
+
+R2 = 1-(sum((acc)^2)/sum((a-mean(a))^2))
+R2
+
+rmse = sqrt(mean(acc^2))
+
+table(rmse, R2, mse, mae)
+
+print(paste("Root Mean Square Error:", rmse))
+print(paste("R-Squared:", R2))
+print(paste("Mean Squared Error:", mse))
+print(paste("Mean Absolate Error", mae))
+```
+
+```{r}
+# Predicting diamond price in random forest model..
+
+avg <- subset(diamond, cut == "Premium" & color == "I" & clarity == "SI1" & carat == 1.27 & x == 6.94 & y == 6.99 & z == 4.24)
+avg
+
+properties6 <- data.frame(...1 = 13656,
+                carat = 1.27,
+                cut = "Premium",
+                color = "I",
+                clarity = "SI1",
+                depth = 60.9,
+                table = 59.0,
+                x=6.94,
+                y=6.99,
+                z=4.24)
+
+ result <- predict(output, properties6)
+ result
+ 
+ # 13656, 1.27, Premium, I, SI1, 60.9, 59.0, 6.94, 6.99, 4.24 and the ORIGINAL PRICE IS 5588. 
+ 
+ # THE PREDICTED PRICE IS 5491 $
+```
+
+```{r}
+# DECISION TREE MODEL approach.
+
+# Decision tree is a graph is used to represent choices and their results in form of a tree. The nodes in the graph represent an event or choice and the edges of the graph represent the decision rules or conditions.
+
+library(rpart)
+library(rpart.plot)
+
+first_model <- rpart(price ~ clarity, 
+                     data = trainingSet)
+first_model
+rpart.plot(first_model)
+
+
+second_model <- rpart(price ~ carat, 
+                     data = trainingSet)
+second_model
+rpart.plot(second_model)
+third_model <- rpart(price ~ x+y+z, 
+                     data = trainingSet)
+third_model
+rpart.plot(third_model)
+
+first_model$variable.importance/max(first_model$variable.importance)
+second_model$variable.importance/max(second_model$variable.importance)
+third_model$variable.importance/max(second_model$variable.importance)
+
+pred_sec <- predict(second_model, testingSet)
+
+#rmse <- function(x) sqrt(sum((x - testingSet$price)^2))
+#rmse(pred_first)
+
+# In decision tree approach, first_model is suitable. But second_model and third_ model works better compare to first_model.
+```
+
+```{r}
+# result plot of decision tree model.
+
+ggplot() + geom_line(aes(x = testingSet$carat,  
+                          y = testingSet$price), colour = 'red') +
+  geom_point(aes(x = testingSet$carat, 
+                y = pred_sec), colour = 'blue') +
+  
+  ggtitle('Carat vs Price (Testing set)') +
+  xlab('carat') +
+  ylab('price')
+
+# As you can see here, the predicted price and the original price are almost same here. Red line is original price and blue dots are the predicted price of the diamond with respect to carat. compare to decision tree model, random forest model works better here ...
+```
+
+```{r}
+# # to calculate accuracy using mse, mae, rmse, r2 function in decision tree model function.
+
+b <- testingSet$price
+a <- pred_sec
+
+acc <- b - a
+
+
+mse = mean((acc)^2)
+mse 
+
+mae = mean(abs(acc))
+mae
+
+R2 = 1-(sum((acc)^2)/sum((a-mean(a))^2))
+R2
+
+rmse = sqrt(mean(acc^2))
+
+table(rmse, R2, mse, mae)
+
+print(paste("Root Mean Square Error:", rmse))
+print(paste("R-Squared:", R2))
+print(paste("Mean Squared Error:", mse))
+print(paste("Mean Absolate Error", mae))
+
+# The rmse and R squared values is less when compare to random forest model.
+```
+
+```{r}
+# Predicting diamond price in decision tree model..
+
+avg <- subset(diamond, cut == "Premium" & color == "I" & clarity == "SI1" & carat == 1.27 & x == 6.94 & y == 6.99 & z == 4.24)
+avg
+
+properties6 <- data.frame(...1 = 13656,
+                carat = 1.27,
+                cut = "Premium",
+                color = "I",
+                clarity = "SI1",
+                depth = 60.9,
+                table = 59.0,
+                x=6.94,
+                y=6.99,
+                z=4.24)
+
+ result <- predict(second_model, properties6)
+ result
+ 
+ # 13656, 1.27, Premium, I, SI1, 60.9, 59.0, 6.94, 6.99, 4.24 and the ORIGINAL PRICE IS 5588. 
+ 
+ # THE PREDICTED PRICE IS 5462 $
+```
+
+```{r}
+# FROM THE THREE DIFFERENT MODEL - MULTIPLE LINEAR REGRESSION MODEL, RANDOM FOREST MODEL AND DECISION TREE MODEL. THE BEST MODEL FOR MY DIAMOND DATA SET IS RANDOM FOREST MODEL. BECAUSE THE ACCURACY IS ALMOST 99.8 %. AND THIS MODEL PREDCTING ALOMST ACCURATE PRICE FOR THE DIAMOND.
+```
+
+```{r}
+# Applying rnorm function.
+
+a <- diamond$price
+
+q <- rnorm(a, mean = 2445, sd = 2)
+plot(q)
+```
+
+```{r}
+#Overall mean.
+
+OverallMean <- data.frame("Overall Mean", 0.9159385, "NA", "NA", "NA", 61.8350974, 57.8027162, 4029.3974852, 6.1397247, 6.1392639, 3.7943936, row.names ="OverallMean")
+OverallMean
+
+# diamond <- rbind(diamond, OverallMean)
+# diamond
+
+names(OverallMean) <- names(diamond)
+diamond <- rbind(diamond, OverallMean)
+tail(diamond)
+```
+
+```{r}
+# Finding the max, best and min price diamonds.
+
+#  If you want to buy a diamond with  highest price , you should look for these values. 
+
+# If you want to buy a diamond with  lowest price , you should look for these values. 
+
+
+max <- subset(diamond, price == max(price))
+max
+
+min <- subset(diamond, price == min(price))
+min
+
+# According to my analysis, the best quality of diamond is here.
+
+# If you want to buy  a high quality diamond, you should look for these values.
+
+best_quality <- subset(diamond, cut == "Ideal" & color == "G" & clarity == "SI1" & carat == 1.20 & x == 6.85 & y == 6.87 & z == 4.22)
+best_quality
+```
+
+```{r}
+# CONCLUSION
+
+# Carat, cut and clarity are the primary factor responsible for variation of price.
+
+# Price of diamond linearly correlated with x, y, z and carat.
+
+# Random forest Model works better than Linear Regression Model AND Decision tree model.
+
+```
