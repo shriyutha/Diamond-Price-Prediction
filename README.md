@@ -1,9 +1,19 @@
 # Diamond-Price-Prediction
 
-# A Diamond is a precious stone formed from an colorless crystalline form of pure carbon. As we all know, a diamond has been an all time preference in the section of ornaments. So diamonds are widely used in making different kinds of jewelries and decorative items.
+INDRODUCTION:
 
-# When compare to other ornaments, the price of the diamond is bit high. So it is very important to have knowledge about diamond features and price distributions, and mainly understanding diamonds are very important, because each diamond is unique in its way.
+A Diamond is a precious stone formed from an colorless crystalline form of pure carbon. As we all know, a diamond has been an all time preference in the section of ornaments. So diamonds are widely used in making different kinds of jewelries and decorative items.
 
-# That is the main reason I have chosen this data set.
+When compare to other ornaments, the price of the diamond is bit high. So it is very important to have knowledge about diamond features and price distributions, and mainly understanding diamonds are very important, because each diamond is unique in its way.
 
-# Here in this data set, I am predicting the price of the diamonds with all remaining variables are given.
+That is the main reason I have chosen this data set.
+
+Here in this data set, I am predicting the price of the diamonds with all remaining variables are given.
+
+CONCLUSION:
+
+Carat, cut and clarity are the primary factor responsible for variation of price.
+
+Price of diamond linearly correlated with x, y, z and carat.
+
+Random forest Model works better than Linear Regression Model AND Decision tree model.
